@@ -1,92 +1,78 @@
-# 🚀 PO CLI - Prompt Optimizer (v0.1)
+# PO CLI (Prompt Optimizer)
 
-**PO CLI** (Prompt Optimizer) là một công cụ dòng lệnh (CLI) siêu tiện lợi chạy bằng Python, giúp biến những câu lệnh (prompt) văn xuôi lười biếng của bạn thành một "Cấu trúc Agentic XML Prompt" xịn sò để tối ưu hóa năng lực Code/Tư duy của các siêu AI như ChatGPT, Claude 3.5, hay Gemini 1.5.
+PO CLI là một công cụ dòng lệnh (CLI) được viết bằng Python hỗ trợ tối ưu hóa quy trình làm việc với các trung tâm trí tuệ nhân tạo (LLM). Thay vì phải viết các mô tả dài dòng thủ công, công cụ sẽ tự động nén bối cảnh dự án, file kỹ thuật, và cây cấu trúc mã nguồn thành một cấu trúc thẻ XML Agentic hoàn chỉnh dựa trên câu lệnh đầu vào của bạn. Phiên bản tối ưu này sẽ được tự động sao chép vào Clipboard để sử dụng ở bất kỳ nền tảng nào.
 
-Thay vì bắt bạn viết prompt thủ công dài dòng, `po_cli` tự động nén toàn bộ "**Mô tả bối cảnh dự án**", "**File đính kèm**", "**Cấu trúc cây thư mục**" thành một XML gọn gàng và tự động chép vào Clipboard của máy bạn để tiện dán đi muôn nơi.
+## Các tính năng chính
 
----
+- **Sinh Meta-Prompt tự động:** Hệ thống tạo cấu trúc mô tả tối ưu và gửi thẳng vào Clipboard của hệ điều hành.
+- **Phân tích Pipelining (stdin):** Hỗ trợ nhận dữ liệu đầu vào chuỗi Unix thông thường (ví dụ: `cat log.txt | po fix "Kiểm tra lỗi"`).
+- **Trích xuất Cây Thư Mục (--tree):** Quét và hiển thị cấu trúc sơ đồ dự án theo dạng ASCII nhằm cung cấp cho mô hình AI góc nhìn bao quát về kiến trúc hệ thống.
+- **Đính kèm file kỹ thuật (-a):** Cho phép gắn nội dung thực tế của các file mã nguồn trực tiếp vào cấu trúc Prompt bằng tham số `-a file_name.ext`.
+- **Tương tác API Streaming:** Hỗ trợ kết nối và hiển thị kết quả truy xuất dữ liệu theo thời gian thực (streaming) thông qua thư viện `litellm` (hỗ trợ OpenAI, Gemini, Anthropic).
+- **Hệ thống theo dõi Token:** Tích hợp thư viện OpenAI `tiktoken` đo lường số lượng token trong câu lệnh và tự động ngắt nếu dữ liệu vượt tải cấu hình của LLM.
+- **Đồng bộ hóa Context từ cộng đồng (po pull):** Khả năng tải tập ngữ cảnh/mô tả bối cảnh mẫu được chia sẻ từ Github Gist hay Markdown URL về máy local nhanh chóng.
+- **Quản lý đa bối cảnh dự án (po add):** Tự tạo và lưu giữ bối cảnh dự án trong file cấu hình để tái sử dụng với tham số `-p`.
+- **Bảo mật .env nội bộ:** Tách bạch hệ thống lưu trữ Configuration nội bộ và API Keys để tránh tuyệt đối rò rỉ dữ liệu. Các thông tin nhạy cảm được cô lập qua biến hệ thống.
 
-## 🔥 Tính năng Nổi Bật
+## Hướng dẫn cài đặt
 
-1. **Sinh Meta-Prompt vào Clipboard:** Chạy trên Terminal, chép kết quả liền tay vào RAM (Clipboard).
-2. **Luồng dữ liệu Pipelining (`stdin`):** Hỗ trợ đường ống Unix standard (`cat log.txt | po fix "Xem lỗi"`). 
-3. **Cây Thư Mục Dự án (`--tree`):** AI sẽ thấu hiểu toàn bộ cấu trúc dự án của bạn đến từng ngóc ngách nhờ sơ đồ ASCII Tree đính kèm.
-4. **Đính file đa dạng (`-a`):** Ném file source code vào như một biến môi trường bằng `-a index.js`.
-5. **Streaming Trực tiếp:** Hỗ trợ kết nối qua thư viện `litellm`. Đọc output nhả chữ trực tiếp từ Gemini/OpenAI ngay trên console Terminal.
-6. **Token Guardian:** Báo cáo ước tính số lượng Token (bằng `tiktoken`) và chặn lại ngay nếu input vượt ngưỡng quá tải.
-7. **Social Context (`po pull`):** Kéo mẫu context dự án chia sẻ từ Github Gist hay Markdown URL về dùng chỉ trong nháy mắt.
-8. **Bảo mật `.env`:** Bảo vệ 100% cực kỳ an toàn các API Key khỏi việc lưu rò rỉ ở text thô.
+Bạn có thể tải hoặc clone dự án về máy, sau đó cài đặt thiết lập toàn cục (global) bằng pip:
 
----
-
-## 🛠 Hướng dẫn Cài đặt
-
-1. Kéo mã nguồn về:
 ```bash
 git clone https://github.com/Saudadeeee/PromtOptimizer.git
 cd PromtOptimizer
-```
-
-2. Cài đặt hệ thống dưới dạng package global:
-```bash
 pip install -e .
 ```
-*(Yêu cầu Python 3.10+)*
+*(Yêu cầu Python 3.10 trở lên)*
 
----
+## Cấu hình hệ thống
 
-## ⚙️ Cấu Hình Ban Đầu
-
-Hệ thống hỗ trợ 2 chế độ Engine: **Gọi API thuần (`api`)** (Nhanh, xịn, dùng Token trực tiếp) hoặc **Gọi lệnh CMD Gemin cũ (`cli`)**. 
-Chúng tôi khuyến nghị sử dụng **API Mode**:
+PO CLI hoạt động linh hoạt thông qua 2 cơ chế Engine: Gọi qua API trực tiếp hoặc gọi qua câu lệnh CLI local. Thiết lập dưới đây dùng để kích hoạt cấu hình chế độ API:
 
 ```bash
-# Chọn chế độ API
+# Lựa chọn engine hoạt động là API
 po config set engine api
 
-# Chọn Model yêu thích (hỗ trợ OpenAI, Gemini, Anthropic qua LiteLLM)
+# Cấu hình Model AI muốn sử dụng (vd: Gemini, GPT)
 po config set model gemini-2.5-flash
 
-# Truyền API Key vào hệ thống (Nó sẽ bảo mật riêng ở ~/.po_env)
-po config set GEMINI_API_KEY <Mã API của bạn>
+# Cài đặt phương thức API Token (Dữ liệu sẽ được bảo vệ tại ~/.po_env)
+po config set GEMINI_API_KEY <Mã_API_Của_Bạn_Tại_Đây>
 ```
 
----
+## Các lệnh sử dụng cơ bản
 
-## 🚀 Cách Dùng Thần Thánh
-
-**1. Chỉ đạo cơ bản (Dễ dùng)**
+**1. Tạo prompt cơ bản kết hợp định danh vai trò (Role)**
 ```bash
-po fix "Tạo form Đăng Nhập bằng React" -r "Chuyên gia UI"
+po fix "Tạo form đăng nhập bằng thư viện React" -r "Chuyên gia UI"
 ```
 
-**2. Quăng File và Quét Cây thư mục (Cực kì lợi hại khi debug codebase lớn)**
+**2. Tạo prompt kèm file và cấu trúc cây thư mục**
+Phân tích một hoặc nhiều file mã nguồn, kèm cấu trúc phân bổ của dự án với độ sâu quét tùy chọn:
 ```bash
 po fix "Viết hàm Fetch Data ở file này dựa theo thư mục cấu trúc" -a ./src/api.js --tree ./src --depth 3
 ```
 
-**3. Tạo một lưu trữ dự án dài hơi (`po add`)**
-Mỗi dự án công ty bạn có cách viết code riêng, hãy lưu Context lại:
+**3. Lưu nháp và gọi lại Context của một dự án (Project Context)**
+Quản lý các bối cảnh để AI luôn nhớ được framework và tiêu chuẩn code mà bạn và công ty quy định:
 ```bash
+# Khai báo ngữ cảnh
 po add next_ecom "Dự án Thương Mại Điện Tử dùng NextJS 14, TailwindCSS. Tuân thủ Clean Code và Server Actions."
-```
-Và xài nó mọi lúc mọi nơi bằng tham số `-p`:
-```bash
+
+# Gọi và sử dụng bất cứ lúc nào
 po fix "Thêm nút thanh toán" -p next_ecom
 ```
 
-**4. Kéo Context từ Cộng Đồng (`po pull`)**
+**4. Kéo Context từ internet về máy**
 ```bash
 po pull "chuyen_gia_db" "https://raw.githubusercontent.com/.../database_expert.md"
 ```
 
+**5. Lịch sử sử dụng**
+Kiểm tra lại nội dung các lệnh bạn vừa xuất trước đây bằng lệnh:
+```bash
+po history
+```
+
 ---
-
-## 📜 Lịch sử thao tác (`po history`)
-Đừng lo nếu lỡ làm mất Clipboard, gõ: `po history` để xem lại 10 prompt xịn sò nhất mà AI vừa sinh ra cho bạn.
-
----
-
-> *Project tự hào được nâng cấp tự động hoá và tối ưu cùng AI cho luồng công việc của Developer.*
->  **Author:** Saudadeeee
->  **Version:** 0.1
+**Version:** 0.1
