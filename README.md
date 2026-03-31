@@ -12,6 +12,30 @@ PO CLI is a Python-based command-line tool designed to streamline prompt enginee
 - **Context Management (`po add` / `po pull`):** Create local project contexts or directly pull `.md` guidelines shared by the community via URL to instruct the AI with specific frameworks.
 - **Secure `.env` Handling:** Safely segregates API Keys by transparently utilizing `python-dotenv` behind the scenes, ensuring credentials are never exposed in plaintext configuration files.
 
+## How It Works
+
+```text
+[User Input Streams]
+ ├── Argument:  po fix "Write tests"
+ ├── Pipeline:  cat log.json | po fix "Check logs"
+ ├── Attach:    -a ./src/api.js
+ ├── Dir Tree:  --tree ./src --depth 3
+ └── Context:   -p nextjs_app -r "QA Expert"
+        │
+        ▼
+[Meta-Prompt Compiler] ---> (tiktoken checks API cost limit)
+        │
+    (Formats safely into XML)
+        │
+        ▼
+   <XML Payload>
+        │
+  (Engine: API) ---> Connects via litellm (Gemini/OpenAI) 
+        │            Streams generated output directly to console
+        ▼
+[Clipboard Cache] ---> Ready to paste anywhere (Ctrl+V)
+```
+
 ## Installation
 
 ```bash
