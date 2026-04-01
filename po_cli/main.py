@@ -29,7 +29,7 @@ def fix(
     depth: int = typer.Option(3, "--depth", "-d", help="Độ sâu tối đa khi quét cây thư mục (mặc định = 3)")
 ):
     """
-    ⚡ Xây lại cấu trúc của một câu Prompt và Copy vào Clipboard. Đọc được từ dấu | (Pipe stdin).
+    Định dạng lại câu prompt và sao chép vào clipboard. Hỗ trợ dữ liệu từ stdin (Pipe).
     """
     
     def generate_tree(dir_path: Path, max_depth: int, current_depth: int = 0) -> str:
@@ -69,9 +69,9 @@ def fix(
     if project:
         project_context = get_project(project)
         if not project_context:
-            console.print(f"[bold yellow]⚠️ Cảnh báo:[/bold yellow] Không tìm thấy nội dung dự án '{project}'.")
+            console.print(f"[bold yellow]Cảnh báo:[/bold yellow] Không tìm thấy dự án '{project}'.")
         else:
-            console.print(f"[bold cyan]🔍 Caching project context:[/bold cyan] {project}\n")
+            console.print(f"[bold cyan]Đang nạp context dự án:[/bold cyan] {project}\n")
             
     attached_content = ""
     if attach:
@@ -88,7 +88,7 @@ def fix(
     if tree and tree.exists() and tree.is_dir():
         struct = generate_tree(tree, max_depth=depth)
         attached_content += f"\n// --- Sơ đồ cấu trúc thư mục (Depth={depth}): {tree.name} ---\n{struct}\n"
-        console.print(f"[bold cyan]📁 Đã nhúng cấu trúc dự án:[/bold cyan] {tree}")
+        console.print(f"[bold cyan]Đã đính kèm cấu trúc dự án:[/bold cyan] {tree}")
 
     meta_prompt = build_meta_prompt(
         user_prompt=actual_prompt, 
@@ -100,11 +100,11 @@ def fix(
     
     tokens = count_tokens(meta_prompt)
     if tokens > 0:
-        console.print(f"[bold dim]📊 Ước lượng Token nạp vào: {tokens} tokens[/bold dim]")
+        console.print(f"[bold dim]Ước lượng token đầu vào: {tokens} tokens[/bold dim]")
         if tokens > 50000:
             console.print(Panel(
                 "[bold red]CẢNH BÁO:[/bold red] Dữ liệu truyền vào quá lớn (>50k tokens).\nViệc này có thể gây tiêu tốn nhiều chi phí API hoặc vượt quá giới hạn của LLM.",
-                title="⚠️ Quá Tải Cấu Trúc", border_style="red"
+                title="Cảnh báo: Dữ liệu quá lớn", border_style="red"
             ))
             if not typer.confirm("Bạn có chắc chắn muốn tiếp tục gọi engine xử lý?"):
                 raise typer.Abort()
@@ -112,14 +112,14 @@ def fix(
     if engine.lower() == "api":
         optimized_prompt = generate_meta_prompt(meta_prompt)
     else:
-        with console.status("[bold green]🤖 AI Engine đang render cấu trúc XML Prompt chuyên sâu...", spinner="dots"):
+        with console.status("[bold green]AI Engine đang định dạng cấu trúc XML Prompt...", spinner="dots"):
             optimized_prompt = generate_meta_prompt(meta_prompt)
     
     save_history(actual_prompt, optimized_prompt)
 
     console.print(Panel(
         optimized_prompt, 
-        title="[bold green]✅ Hoàn thành (Nội dung lưu tại Clipboard)[/bold green]", 
+        title="[bold green]Hoàn thành (Đã sao chép vào Clipboard)[/bold green]", 
         border_style="green",
         expand=False
     ))
@@ -132,71 +132,71 @@ def fix(
 
 @app.command()
 def add(name: str, description: str):
-    """🗂️ Đăng ký thông tin 1 dự án (Project Context)."""
+    """Đăng ký thông tin dự án (Project Context)."""
     add_project(name, description)
-    console.print(f"[bold green]✔️ Đã lưu ngữ cảnh dự án: {name}[/bold green]")
+    console.print(f"[bold green]Đã lưu thông tin dự án: {name}[/bold green]")
 
 @app.command()
 def rm(name: str):
-    """🗑️ Xoá ngữ cảnh của 1 dự án."""
+    """Xóa thông tin dự án."""
     if remove_project(name):
-        console.print(f"[bold green]✔️ Đã xoá dự án: {name}[/bold green]")
+        console.print(f"[bold green]Đã xóa dự án: {name}[/bold green]")
     else:
-        console.print(f"[bold red]❌ Không tìm thấy dự án nào tên: {name}[/bold red]")
+        console.print(f"[bold red]Không tìm thấy dự án: {name}[/bold red]")
 
 @app.command()
 def edit(name: str):
-    """✏️ Thay đổi nội dung Context của 1 dự án cũ."""
+    """Cập nhật nội dung Project."""
     old_desc = get_project(name)
     if not old_desc:
-        console.print(f"[bold red]❌ Dự án '{name}' không tồn tại.[/bold red]")
+        console.print(f"[bold red]Dự án '{name}' không tồn tại.[/bold red]")
         return
     console.print(f"Cập nhật thông tin cho [cyan]{name}[/cyan] (Bấm Enter để đóng)")
     new_desc = typer.prompt("Mô tả mới", default=old_desc)
     update_project(name, new_desc)
-    console.print(f"[bold green]✔️ Đã cập nhật thành công![/bold green]")
+    console.print(f"[bold green]Đã cập nhật dự án thành công.[/bold green]")
 
 @app.command()
 def ls():
-    """📝 Liệt kê các dự án hiện có."""
+    """Liệt kê danh sách dự án."""
     projects = list_projects()
     if not projects:
         console.print("[italic yellow]Hiện trong máy chưa có lưu cấu hình dự án nào.[/italic yellow]")
         return
-    console.print("\n[bold blue]📚 Kho dự án trên máy:[/bold blue]\n")
+    console.print("\n[bold blue]Danh sách dự án khả dụng:[/bold blue]\n")
     for name, desc in projects.items():
-        console.print(f"🔸 [bold cyan]{name}[/bold cyan] => {desc}")
+        console.print(f"- [bold cyan]{name}[/bold cyan]: {desc}")
     console.print()
 
 @app.command()
 def history(limit: int = 10):
-    """🕒 Mở các Meta-prompt bạn đã tạo trong quá khứ."""
+    """Xem lịch sử các Meta-prompt đã tạo."""
     list_history(limit)
     
 @app.command()
 def pull(name: str, url: str):
-    """⬇️ Nhúng mội project template từ một đường link URL (Raw Markdown)."""
-    console.print(f"\n[cyan]⏳ Đang fetch nội dung từ:[/cyan] {url}")
+    """Tải project template từ đường dẫn URL."""
+    console.print(f"\n[cyan]Đang tải dữ liệu từ:[/cyan] {url}")
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as response:
             content = response.read().decode('utf-8')
             add_project(name, content)
-            console.print(f"[bold green]✔️ Đã kéo về và lưu thành công dự án: {name} ({len(content)} chars)[/bold green]\n")
+            console.print(f"[bold green]Đã lưu dự án: {name} ({len(content)} ký tự)[/bold green]\n")
     except Exception as e:
-        console.print(f"[bold red]❌ Lỗi khi tải file:[/bold red] {e}")
+        console.print(f"[bold red]Lỗi tải file:[/bold red] {e}")
 
 @config_app.command("set")
 def config_set(key: str, value: str):
     """Cấu hình biến chung (engine/model/OPENAI_API_KEY). VD: po config set engine api"""
     set_config_value(key, value)
-    console.print(f"[bold green]✔️ Set {key} = {value} thành công.[/bold green]")
+    console.print(f"[bold green]Cấu hình {key} = {value} thành công.[/bold green]")
 
 @config_app.command("get")
 def config_get():
     """Hiển thị toàn bộ biến cấu hình hiện hữu."""
     configs = list_configs()
-    console.print("\n[bold blue]🔧 Cấu hình hệ thống:[/bold blue]\n")
+    console.print("\n[bold blue]Cấu hình hệ thống:[/bold blue]\n")
     for k, v in configs.items():
         val = "***" if "API_KEY" in k.upper() else v
         console.print(f" - {k}: [cyan]{val}[/cyan]")

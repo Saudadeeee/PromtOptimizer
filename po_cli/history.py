@@ -32,7 +32,7 @@ def list_history(limit: int = 10):
         console.print("[italic yellow]Chưa có lịch sử prompt nào được lưu.[/italic yellow]")
         return
     
-    console.print(f"\n[bold blue]🕒 Lịch sử {min(limit, len(files))} prompt gần nhất:[/bold blue]\n")
+    console.print(f"\n[bold blue]Lịch sử {min(limit, len(files))} prompt gần nhất:[/bold blue]\n")
     for i, filepath in enumerate(files[:limit]):
         # Read the original prompt snippet
         try:
@@ -45,6 +45,6 @@ def list_history(limit: int = 10):
             
         parts = filepath.stem.split('_')
         time_str = parts[0] + " " + parts[1][:2] + ":" + parts[1][2:4] + ":" + parts[1][4:] if len(parts) >= 2 else filepath.stem
-        console.print(f"🔸 [{i+1}] [cyan]{time_str}[/cyan] - [yellow]{snippet}[/yellow]")
+        console.print(f"- [{i+1}] [cyan]{time_str}[/cyan]: [yellow]{snippet}[/yellow]")
         console.print(f"    [dim italic]File: {filepath.absolute()}[/dim italic]")
     console.print()

@@ -74,7 +74,7 @@ def call_api_engine(prompt: str) -> str:
             stream=True
         )
         
-        console.print(f"\n[bold cyan]🚀 Đang Stream dữ liệu từ {model}...[/bold cyan]\n")
+        console.print(f"\n[bold cyan]Đang nhận dữ liệu từ {model}...[/bold cyan]\n")
         full_text = ""
         for chunk in response:
             content = chunk.choices[0].delta.content or ""
